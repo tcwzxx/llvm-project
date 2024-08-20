@@ -10956,7 +10956,9 @@ InstructionCost BoUpSLP::getTreeCost(ArrayRef<Value *> VectorizedVals) {
         if (OriginalSz > SrcSz)
           Opcode = BWIt->second.second ? Instruction::SExt : Instruction::ZExt;
         Type *SrcTy = IntegerType::get(DstTy->getContext(), SrcSz);
-        Cost += TTI->getCastInstrCost(Opcode, DstTy, SrcTy,
+        Type *SrcVecTy = getWidenedType(SrcTy, Root.getVectorFactor());
+        Type *DstVecTy = getWidenedType(DstTy, Root.getVectorFactor());
+        Cost += TTI->getCastInstrCost(Opcode, DstVecTy, SrcVecTy,
                                       TTI::CastContextHint::None,
                                       TTI::TCK_RecipThroughput);
       }
